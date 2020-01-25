@@ -14,7 +14,9 @@ IMPORTANT: You must save this as a comma delited .csv file:
 
     From Excel, choose File -> Save As -> Comma Delimited CSV, and ignore any warnings. All of the Excel's CSV exports that I have tried worked, but try some others if it will not import.
 
-Press the "Select CSV" button and navigate to the location of your .csv file. Click your file, then press open and verify that your file's path appears next to the "Select CSV" button.
+Either
+1. Press the "Select CSV" button and navigate to the location of your .csv file. Click your file, then press open and verify that your file's path appears next to the "Select CSV" button.
+2. Drag and drop the .csv file into the program's window.
 
 A .csv file will take precedence over data in the text area. 
 

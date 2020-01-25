@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -64,12 +65,13 @@ public class GUI extends JPanel implements ActionListener, MouseListener {
     private JButton abort;
     private JButton clearCsv;
 
-    private JFileChooser fileChooser;
+    private String absolutePath;
 
     private Sorter sorter;
 
     public GUI() {
         sorter = new Sorter();// Initialize the Sorter
+        absolutePath = "";
         makeFrame();
     }
 
@@ -214,6 +216,30 @@ public class GUI extends JPanel implements ActionListener, MouseListener {
         frame.add(this);
 
         frame.setBackground(Color.WHITE);
+
+        // Let the user drop the csv file into the window
+        new FileDrop(this, true, new FileDrop.Listener() {
+            @Override
+            public void filesDropped(File[] files) {
+                try {
+                    String path = files[0].getCanonicalPath();
+                    System.out.println("Dropped file: " + path);
+                    if (path.substring(path.length() - 4).equals(".csv")) {
+                        String name = new File(path).getName();
+                        selected.setText(name);
+                        absolutePath = path;
+                        System.out.println("Selected csv file: " + name);
+                        setAssign();
+                        setClearCsv();
+                    } else {
+                        System.out.println("The dropped file was not a csv file!");
+                    }
+                } // end try
+                catch (IOException e) {
+                    e.printStackTrace();
+                } // end filesDropped
+            }// end FileDrop.Listener
+        });
 
         // Make the window visible, needs to be last
         frame.pack();
@@ -376,8 +402,7 @@ public class GUI extends JPanel implements ActionListener, MouseListener {
                 if (selectedText.substring(selectedText.length() - 4).equals(".csv")) {
                     try {
                         // Read each line of the csv file
-                        BufferedReader csvReader = new BufferedReader(
-                                new FileReader(fileChooser.getSelectedFile().getAbsolutePath()));
+                        BufferedReader csvReader = new BufferedReader(new FileReader(absolutePath));
                         String row;
                         String matches = "";
                         // Loop until the end of the file is reached
@@ -431,13 +456,13 @@ public class GUI extends JPanel implements ActionListener, MouseListener {
             FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");// Set a filter to only
                                                                                              // allow csv files
             jfc.setFileFilter(filter);
-            fileChooser = jfc;
 
             int returnVal = jfc.showOpenDialog(null);// The value returned by the file chooser
             if (returnVal == JFileChooser.APPROVE_OPTION) {// If the file was approved, set the label to display the csv
                                                            // name
                 System.out.println("Selected csv file: " + jfc.getSelectedFile().getAbsolutePath());
                 selected.setText(jfc.getSelectedFile().getName());
+                absolutePath = jfc.getSelectedFile().getAbsolutePath();
             }
             setAssign();
             setClearCsv();
